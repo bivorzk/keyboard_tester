@@ -1,7 +1,6 @@
 #include "keyboard_manager.h"
 
 #include <windows.h>
-// unused due to refactor #include <vector>
 #include <array>
 
 std::array<bool, 256> pressedKeys; // refactored from std::vector<bool> pressedKeys(256, false);

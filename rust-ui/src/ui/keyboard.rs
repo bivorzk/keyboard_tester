@@ -1,16 +1,25 @@
+use crate::settings::KeyboardLayout;
 use eframe::egui::{self, Button, Color32, RichText, Ui, Vec2};
 
 const KEY_H: f32 = 44.0;
 const GAP: f32 = 6.0;
 const UNIT: f32 = 44.0;
 
-pub fn show(ui: &mut Ui, is_pressed: impl Fn(i32) -> bool) {
+pub fn show(ui: &mut Ui, layout: KeyboardLayout, is_pressed: impl Fn(i32) -> bool) {
     ui.spacing_mut().item_spacing = Vec2::splat(GAP);
 
-    for row in ANSI_LAYOUT {
+    let rows = match layout {
+        KeyboardLayout::Ansi => ANSI_LAYOUT,
+    };
+
+    for row in rows {
         ui.horizontal(|ui| {
             for key in *row {
-                draw_key(ui, key, is_pressed(key.vk));
+                if key.vk == 0 {
+                    ui.add_space(UNIT * key.w);
+                } else {
+                    draw_key(ui, key, is_pressed(key.vk));
+                }
             }
         });
     }
@@ -51,9 +60,38 @@ const fn wide(label: &'static str, vk: i32, w: f32) -> Key {
     Key { label, vk, w }
 }
 
+const fn space(w: f32) -> Key {
+    Key {
+        label: "",
+        vk: 0,
+        w,
+    }
+}
+
 const ANSI_LAYOUT: &[&[Key]] = &[
     &[
         key("Esc", 0x1B),
+        space(0.5),
+        key("F1", 0x70),
+        key("F2", 0x71),
+        key("F3", 0x72),
+        key("F4", 0x73),
+        space(0.5),
+        key("F5", 0x74),
+        key("F6", 0x75),
+        key("F7", 0x76),
+        key("F8", 0x77),
+        space(0.5),
+        key("F9", 0x78),
+        key("F10", 0x79),
+        key("F11", 0x7A),
+        key("F12", 0x7B),
+        space(0.5),
+        key("Prt", 0x2C),
+        key("Scr", 0x91),
+        key("Pause", 0x13),
+    ],
+    &[
         key("1", 0x31),
         key("2", 0x32),
         key("3", 0x33),
@@ -67,6 +105,10 @@ const ANSI_LAYOUT: &[&[Key]] = &[
         key("-", 0xBD),
         key("=", 0xBB),
         wide("Backspace", 0x08, 2.0),
+        space(0.5),
+        key("Ins", 0x2D),
+        key("Home", 0x24),
+        key("PgUp", 0x21),
     ],
     &[
         wide("Tab", 0x09, 1.5),
@@ -83,6 +125,10 @@ const ANSI_LAYOUT: &[&[Key]] = &[
         key("[", 0xDB),
         key("]", 0xDD),
         wide("\\", 0xDC, 1.5),
+        space(0.5),
+        key("Del", 0x2E),
+        key("End", 0x23),
+        key("PgDn", 0x22),
     ],
     &[
         wide("Caps", 0x14, 1.75),
@@ -98,6 +144,7 @@ const ANSI_LAYOUT: &[&[Key]] = &[
         key(";", 0xBA),
         key("'", 0xDE),
         wide("Enter", 0x0D, 2.25),
+        space(4.0),
     ],
     &[
         wide("Shift", 0xA0, 2.25),
@@ -112,6 +159,8 @@ const ANSI_LAYOUT: &[&[Key]] = &[
         key(".", 0xBE),
         key("/", 0xBF),
         wide("Shift", 0xA1, 2.75),
+        space(1.5),
+        key("Up", 0x26),
     ],
     &[
         wide("Ctrl", 0xA2, 1.5),
@@ -119,8 +168,12 @@ const ANSI_LAYOUT: &[&[Key]] = &[
         wide("Alt", 0xA4, 1.25),
         wide("Space", 0x20, 6.25),
         wide("Alt", 0xA5, 1.25),
-        wide("Fn", 0x00, 1.25),
+        wide("Fn", 0xFF, 1.25),
         wide("Menu", 0x5D, 1.25),
         wide("Ctrl", 0xA3, 1.5),
+        space(0.5),
+        key("Left", 0x25),
+        key("Down", 0x28),
+        key("Right", 0x27),
     ],
 ];
