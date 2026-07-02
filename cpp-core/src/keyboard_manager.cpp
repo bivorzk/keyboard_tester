@@ -1,10 +1,10 @@
 #include "keyboard_manager.h"
 
-
 #include <windows.h>
-#include <vector>
+// unused due to refactor #include <vector>
+#include <array>
 
-std::vector<bool> pressedKeys;
+std::array<bool, 256> pressedKeys; // refactored from std::vector<bool> pressedKeys(256, false);
 
 
 namespace {
@@ -17,7 +17,7 @@ constexpr int kMaxVirtualKey = 0xFE;
 }
 
 bool KeyboardManager::init() {
-    initialized_ = true;
+    initialized_ = true; 
     return true;
 }
 
@@ -37,13 +37,13 @@ void KeyboardManager::poll() {
             pressedKeys[virtual_key] = is_down;
         }
     }
-
 }
+
 
 bool KeyboardManager::isKeyDown(int virtual_key) const {
     if (!initialized_ || !isValidVirtualKey(virtual_key)) {
         return false;
     }
 
-    return (GetAsyncKeyState(virtual_key) & 0x8000) != 0;
+    return pressedKeys[virtual_key]; // 0x8000 
 }
