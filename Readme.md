@@ -1,4 +1,4 @@
-# Keyboard tester
+# Keyboard tester (W.I.P)
 
 - Recently my keyboard had some issues and I couldn't find a normal keyboard tester so I made one
 - Currently only works on Windows but I will expand it to Linux as well 
