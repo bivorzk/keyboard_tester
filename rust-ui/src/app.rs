@@ -77,6 +77,7 @@ impl eframe::App for MyApp {
                 ui,
                 self.settings.polling_interval_ms,
                 pressed_key().map(|key| key.vk),
+                Keyboard::raw_input_enabled(),
             );
         });
 
@@ -85,6 +86,7 @@ impl eframe::App for MyApp {
             &mut self.show_diagnostics,
             self.settings.polling_interval_ms,
             pressed_key(),
+            Keyboard::raw_input_enabled(),
         );
         ui::about::show(ui.ctx(), &mut self.show_about);
     }
