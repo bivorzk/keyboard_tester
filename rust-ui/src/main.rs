@@ -1,9 +1,10 @@
+mod app;
 mod ffi;
 mod keyboard;
-mod app;
 mod settings;
 mod ui {
     pub mod about;
+    pub mod devices;
     pub mod diagnostics;
     pub mod keyboard;
     pub mod settings;
@@ -37,15 +38,11 @@ fn install_raw_input_hook(options: &mut eframe::NativeOptions) {
             let message = unsafe { &*message.cast::<MSG>() };
 
             if !registered && !message.hwnd.is_null() {
-                registered = keyboard::Keyboard::register_raw_input(
-                    message.hwnd as *mut c_void,
-                );
+                registered = keyboard::Keyboard::register_raw_input(message.hwnd as *mut c_void);
             }
 
             if registered && message.message == WM_INPUT {
-                keyboard::Keyboard::process_raw_input(
-                    message.lParam as *mut c_void,
-                );
+                keyboard::Keyboard::process_raw_input(message.lParam as *mut c_void);
             }
 
             false
@@ -62,13 +59,9 @@ fn main() {
 
     println!("Keyboard core initialized successfully.");
 
-
-
     let settings = Settings::load();
-    let mut viewport = egui::ViewportBuilder::default().with_inner_size([
-        settings.window_size.width,
-        settings.window_size.height,
-    ]);
+    let mut viewport = egui::ViewportBuilder::default()
+        .with_inner_size([settings.window_size.width, settings.window_size.height]);
 
     if let Some(icon) = load_icon("assets/keyboard_logo.png") {
         viewport = viewport.with_icon(icon);

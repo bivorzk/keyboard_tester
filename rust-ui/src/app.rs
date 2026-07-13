@@ -6,6 +6,7 @@ pub struct MyApp {
     settings: Settings,
     show_settings: bool,
     show_about: bool,
+    show_devices: bool,
     show_diagnostics: bool,
 }
 
@@ -15,11 +16,11 @@ impl MyApp {
             settings,
             show_settings: false,
             show_about: false,
+            show_devices: false,
             show_diagnostics: false,
         }
     }
 }
-
 
 fn pressed_key() -> Option<ui::sidebar::KeyInfo> {
     (0x01..=0xFE).find_map(|vk| {
@@ -28,7 +29,6 @@ fn pressed_key() -> Option<ui::sidebar::KeyInfo> {
     })
 }
 
- 
 impl eframe::App for MyApp {
     fn logic(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         Keyboard::poll();
@@ -51,6 +51,7 @@ impl eframe::App for MyApp {
             ui.horizontal(|ui| {
                 ui.heading("Keyboard Tester");
                 ui.toggle_value(&mut self.show_settings, "Settings");
+                ui.toggle_value(&mut self.show_devices, "Devices");
                 ui.toggle_value(&mut self.show_diagnostics, "Diagnostics");
                 if ui.button("About").clicked() {
                     self.show_about = true;
@@ -78,15 +79,18 @@ impl eframe::App for MyApp {
                 self.settings.polling_interval_ms,
                 pressed_key().map(|key| key.vk),
                 Keyboard::raw_input_enabled(),
+                Keyboard::device_count(),
             );
         });
 
+        ui::devices::show(ui.ctx(), &mut self.show_devices);
         ui::diagnostics::show(
             ui.ctx(),
             &mut self.show_diagnostics,
             self.settings.polling_interval_ms,
             pressed_key(),
             Keyboard::raw_input_enabled(),
+            Keyboard::device_count(),
         );
         ui::about::show(ui.ctx(), &mut self.show_about);
     }

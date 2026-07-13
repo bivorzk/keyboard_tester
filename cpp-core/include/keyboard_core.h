@@ -19,6 +19,8 @@ extern "C" {
     KB_API bool kb_register_raw_input(void* hwnd);
     KB_API void kb_process_raw_input(void* hrawinput);
     KB_API bool kb_raw_input_enabled();
+    KB_API int kb_device_count();
+    KB_API int kb_device_name(int index, char* buffer, int buffer_size);
 
 #ifdef __cplusplus
 }

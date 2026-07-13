@@ -16,6 +16,7 @@ bool isValidVirtualKey(int virtual_key) {
 }
 
 bool KeyboardManager::init() {
+    device_manager.enumerate();
     pressedKeys.fill(false);
     initialized_ = true;
     return true;
@@ -25,6 +26,14 @@ void KeyboardManager::shutdown() {
     pressedKeys.fill(false);
     raw_input_enabled_ = false;
     initialized_ = false;
+}
+
+int KeyboardManager::deviceCount() const {
+    return device_manager.deviceCount();
+}
+
+bool KeyboardManager::deviceName(int index, std::wstring& name) const {
+    return device_manager.deviceName(index, name);
 }
 
 void KeyboardManager::poll() {
@@ -91,6 +100,7 @@ void KeyboardManager::processRawInput(void* hrawinput) {
     }
 
     const RAWKEYBOARD& keyboard = raw->data.keyboard;
+    device_manager.recordInput(raw->header.hDevice);
 
     int virtual_key = keyboard.VKey;
     const bool extended = (keyboard.Flags & RI_KEY_E0) != 0;

@@ -33,4 +33,27 @@ impl Keyboard {
     pub fn raw_input_enabled() -> bool {
         unsafe { ffi::kb_raw_input_enabled() }
     }
+
+    pub fn device_count() -> usize {
+        unsafe { ffi::kb_device_count().max(0) as usize }
+    }
+
+    pub fn device_name(index: usize) -> Option<String> {
+        let index = i32::try_from(index).ok()?;
+        let required = unsafe { ffi::kb_device_name(index, std::ptr::null_mut(), 0) };
+
+        if required <= 0 {
+            return None;
+        }
+
+        let mut buffer = vec![0_u8; required as usize];
+        let written = unsafe { ffi::kb_device_name(index, buffer.as_mut_ptr().cast(), required) };
+
+        if written != required {
+            return None;
+        }
+
+        buffer.pop();
+        String::from_utf8(buffer).ok()
+    }
 }
