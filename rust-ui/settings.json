@@ -1,0 +1,9 @@
+{
+  "theme": "Dark",
+  "keyboard_layout": "Ansi",
+  "window_size": {
+    "width": 1000.0,
+    "height": 537.0
+  },
+  "polling_interval_ms": 16
+}

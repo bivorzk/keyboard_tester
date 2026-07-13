@@ -147,7 +147,7 @@ const ANSI_LAYOUT: &[&[Key]] = &[
         space(4.0),
     ],
     &[
-        wide("Shift", 0xA0, 2.25),
+        wide("Left Shift", 0xA0, 2.25),
         key("Z", 0x5A),
         key("X", 0x58),
         key("C", 0x43),
@@ -158,7 +158,7 @@ const ANSI_LAYOUT: &[&[Key]] = &[
         key(",", 0xBC),
         key(".", 0xBE),
         key("/", 0xBF),
-        wide("Shift", 0xA1, 2.75),
+        wide("Right Shift", 0xA1, 2.75),
         space(1.5),
         key("Up", 0x26),
     ],

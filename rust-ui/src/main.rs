@@ -24,6 +24,35 @@ fn load_icon(path: &str) -> Option<egui::IconData> {
     })
 }
 
+#[cfg(windows)]
+fn install_raw_input_hook(options: &mut eframe::NativeOptions) {
+    use std::ffi::c_void;
+    use windows_sys::Win32::UI::WindowsAndMessaging::{MSG, WM_INPUT};
+    use winit::platform::windows::EventLoopBuilderExtWindows;
+
+    options.event_loop_builder = Some(Box::new(|builder| {
+        let mut registered = false;
+
+        builder.with_msg_hook(move |message| {
+            let message = unsafe { &*message.cast::<MSG>() };
+
+            if !registered && !message.hwnd.is_null() {
+                registered = keyboard::Keyboard::register_raw_input(
+                    message.hwnd as *mut c_void,
+                );
+            }
+
+            if registered && message.message == WM_INPUT {
+                keyboard::Keyboard::process_raw_input(
+                    message.lParam as *mut c_void,
+                );
+            }
+
+            false
+        });
+    }));
+}
+
 fn main() {
     if !keyboard::Keyboard::init() {
         eprintln!("Failed to initialize keyboard core.");
@@ -44,11 +73,13 @@ fn main() {
     if let Some(icon) = load_icon("assets/keyboard_logo.png") {
         viewport = viewport.with_icon(icon);
     }
-
-    let options = eframe::NativeOptions {
+    let mut options = eframe::NativeOptions {
         viewport,
         ..Default::default()
     };
+
+    #[cfg(windows)]
+    install_raw_input_hook(&mut options);
 
     if let Err(err) = eframe::run_native(
         "Keyboard Tester",

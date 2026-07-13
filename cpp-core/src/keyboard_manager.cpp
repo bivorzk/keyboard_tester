@@ -90,12 +90,33 @@ void KeyboardManager::processRawInput(void* hrawinput) {
         return;
     }
 
-    int virtual_key = raw->data.keyboard.VKey;
+    const RAWKEYBOARD& keyboard = raw->data.keyboard;
+
+    int virtual_key = keyboard.VKey;
+    const bool extended = (keyboard.Flags & RI_KEY_E0) != 0;
+
+    switch (virtual_key) {
+    case VK_SHIFT:
+        virtual_key = MapVirtualKeyW(
+            keyboard.MakeCode,
+            MAPVK_VSC_TO_VK_EX
+        );
+        break;
+
+    case VK_CONTROL:
+        virtual_key = extended ? VK_RCONTROL : VK_LCONTROL;
+        break;
+
+    case VK_MENU:
+        virtual_key = extended ? VK_RMENU : VK_LMENU;
+        break;
+    }
+
     if (!isValidVirtualKey(virtual_key)) {
         return;
     }
 
-    bool is_up = (raw->data.keyboard.Flags & RI_KEY_BREAK) != 0;
+    const bool is_up = (keyboard.Flags & RI_KEY_BREAK) != 0;
     pressedKeys[virtual_key] = !is_up;
 }
 

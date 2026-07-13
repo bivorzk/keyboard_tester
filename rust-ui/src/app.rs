@@ -28,7 +28,7 @@ fn pressed_key() -> Option<ui::sidebar::KeyInfo> {
     })
 }
 
-
+ 
 impl eframe::App for MyApp {
     fn logic(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         Keyboard::poll();
