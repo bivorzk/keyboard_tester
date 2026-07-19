@@ -1,34 +1,26 @@
-use eframe::egui::{self, RichText, Ui};
+use eframe::egui::{RichText, Ui};
 
 #[derive(Clone, Copy)]
 pub struct KeyInfo {
     pub vk: i32,
-    pub pressed: bool,
 }
 
 pub fn show(ui: &mut Ui, key: Option<KeyInfo>) {
-    ui.vertical(|ui| {
-        ui.heading("Key info");
-        ui.separator();
-
+    ui.horizontal(|ui| {
         let Some(key) = key else {
-            ui.label(RichText::new("No key is currently pressed.").italics());
+            ui.label(RichText::new("Press any key to test it").weak());
             return;
         };
 
         let scan_code = scan_code(key.vk);
-
-        row(ui, "Key name", key_name(key.vk));
-        row(ui, "Virtual-key code", format!("0x{:02X} ({})", key.vk, key.vk));
-        row(ui, "Scan code", format!("0x{scan_code:02X} ({scan_code})"));
-        row(ui, "State", if key.pressed { "Pressed" } else { "Released" });
-    });
-}
-
-fn row(ui: &mut Ui, label: &str, value: impl ToString) {
-    ui.horizontal(|ui| {
-        ui.label(RichText::new(label).color(egui::Color32::GRAY));
-        ui.label(value.to_string());
+        ui.label(
+            RichText::new(key_name(key.vk))
+                .strong()
+                .color(ui.visuals().hyperlink_color),
+        );
+        ui.label(RichText::new("is pressed").weak());
+        ui.separator();
+        ui.monospace(format!("VK 0x{:02X}  ·  Scan 0x{scan_code:02X}", key.vk));
     });
 }
 
@@ -53,6 +45,7 @@ fn key_name(vk: i32) -> &'static str {
         0xBD => "-",
         0xBE => ".",
         0xBF => "/",
+        0xC0 => "`",
         0xDB => "[",
         0xDC => "\\",
         0xDD => "]",
@@ -63,9 +56,8 @@ fn key_name(vk: i32) -> &'static str {
 
 fn char_name(vk: i32) -> &'static str {
     const NAMES: [&str; 36] = [
-        "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G",
-        "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X",
-        "Y", "Z",
+        "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G", "H",
+        "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z",
     ];
 
     if vk <= 0x39 {

@@ -35,7 +35,7 @@ impl Settings {
 impl Default for Settings {
     fn default() -> Self {
         Self {
-            theme: Theme::Dark,
+            theme: Theme::Default,
             keyboard_layout: KeyboardLayout::Ansi,
             window_size: WindowSize {
                 width: 1000.0,
@@ -48,6 +48,7 @@ impl Default for Settings {
 
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize)]
 pub enum Theme {
+    Default,
     Dark,
     Light,
 }

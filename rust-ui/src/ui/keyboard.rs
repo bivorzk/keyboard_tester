@@ -1,11 +1,11 @@
-use crate::settings::KeyboardLayout;
+use crate::settings::{KeyboardLayout, Theme};
 use eframe::egui::{self, Button, Color32, RichText, Ui, Vec2};
 
 const KEY_H: f32 = 44.0;
 const GAP: f32 = 6.0;
 const UNIT: f32 = 44.0;
 
-pub fn show(ui: &mut Ui, layout: KeyboardLayout, is_pressed: impl Fn(i32) -> bool) {
+pub fn show(ui: &mut Ui, layout: KeyboardLayout, theme: Theme, is_pressed: impl Fn(i32) -> bool) {
     ui.spacing_mut().item_spacing = Vec2::splat(GAP);
 
     let rows = match layout {
@@ -18,22 +18,30 @@ pub fn show(ui: &mut Ui, layout: KeyboardLayout, is_pressed: impl Fn(i32) -> boo
                 if key.vk == 0 {
                     ui.add_space(UNIT * key.w);
                 } else {
-                    draw_key(ui, key, is_pressed(key.vk));
+                    draw_key(ui, key, is_pressed(key.vk), theme);
                 }
             }
         });
     }
 }
 
-fn draw_key(ui: &mut Ui, key: &Key, pressed: bool) {
-    let fill = if pressed {
+fn draw_key(ui: &mut Ui, key: &Key, pressed: bool, theme: Theme) {
+    let fill = if pressed && theme == Theme::Default {
+        Color32::from_rgb(38, 59, 104)
+    } else if pressed {
         Color32::from_rgb(64, 150, 110)
+    } else if theme == Theme::Default {
+        Color32::from_rgb(14, 20, 37)
     } else {
         Color32::from_rgb(42, 45, 50)
     };
 
-    let stroke = if pressed {
+    let stroke = if pressed && theme == Theme::Default {
+        egui::Stroke::new(2.0, Color32::from_rgb(101, 217, 255))
+    } else if pressed {
         egui::Stroke::new(2.0, Color32::from_rgb(180, 255, 215))
+    } else if theme == Theme::Default {
+        egui::Stroke::new(1.0, Color32::from_rgb(38, 59, 104))
     } else {
         egui::Stroke::new(1.0, Color32::from_rgb(85, 90, 98))
     };
@@ -92,6 +100,7 @@ const ANSI_LAYOUT: &[&[Key]] = &[
         key("Pause", 0x13),
     ],
     &[
+        key("`", 0xC0),
         key("1", 0x31),
         key("2", 0x32),
         key("3", 0x33),
@@ -159,18 +168,18 @@ const ANSI_LAYOUT: &[&[Key]] = &[
         key(".", 0xBE),
         key("/", 0xBF),
         wide("Right Shift", 0xA1, 2.75),
-        space(1.5),
+        space(1.625),
         key("Up", 0x26),
     ],
     &[
-        wide("Ctrl", 0xA2, 1.5),
+        wide("Ctrl", 0xA2, 1.25),
         wide("Win", 0x5B, 1.25),
         wide("Alt", 0xA4, 1.25),
         wide("Space", 0x20, 6.25),
         wide("Alt", 0xA5, 1.25),
-        wide("Fn", 0xFF, 1.25),
+        wide("Win", 0x5C, 1.25),
         wide("Menu", 0x5D, 1.25),
-        wide("Ctrl", 0xA3, 1.5),
+        wide("Ctrl", 0xA3, 1.25),
         space(0.5),
         key("Left", 0x25),
         key("Down", 0x28),

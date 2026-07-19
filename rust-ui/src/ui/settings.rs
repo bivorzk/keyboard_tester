@@ -2,15 +2,14 @@ use crate::settings::{KeyboardLayout, Settings, Theme};
 use eframe::egui::{ComboBox, DragValue, Ui};
 
 pub fn show(ui: &mut Ui, settings: &mut Settings) {
-    ui.heading("Settings");
-    ui.separator();
-
     ComboBox::from_label("Theme")
         .selected_text(match settings.theme {
+            Theme::Default => "Default",
             Theme::Dark => "Dark",
             Theme::Light => "Light",
         })
         .show_ui(ui, |ui| {
+            ui.selectable_value(&mut settings.theme, Theme::Default, "Default");
             ui.selectable_value(&mut settings.theme, Theme::Dark, "Dark");
             ui.selectable_value(&mut settings.theme, Theme::Light, "Light");
         });

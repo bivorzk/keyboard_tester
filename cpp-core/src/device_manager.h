@@ -8,6 +8,7 @@
 struct KeyboardDevice {
     HANDLE device_handle = nullptr;
     std::wstring device_name;
+    std::wstring friendly_name;
     bool is_connected = false;
     std::chrono::steady_clock::time_point last_input_time{};
 };

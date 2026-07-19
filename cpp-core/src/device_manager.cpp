@@ -1,4 +1,35 @@
 #include "device_manager.h"
+#include <hidsdi.h>
+
+#ifdef _MSC_VER
+#pragma comment(lib, "hid.lib")
+#endif
+
+namespace {
+std::wstring getFriendlyName(const std::wstring& device_path) {
+    HANDLE handle = CreateFileW(
+        device_path.c_str(),
+        0,
+        FILE_SHARE_READ | FILE_SHARE_WRITE,
+        nullptr,
+        OPEN_EXISTING,
+        0,
+        nullptr
+    );
+
+    if (handle == INVALID_HANDLE_VALUE) {
+        return L"";
+    }
+
+    wchar_t buffer[256] = {};
+    std::wstring result;
+    if (HidD_GetProductString(handle, buffer, sizeof(buffer))) {
+        result = buffer;
+    }
+    CloseHandle(handle);
+    return result;
+}
+}
 
 void DeviceManager::enumerate() {
     keyboard_devices.clear();
@@ -18,7 +49,6 @@ void DeviceManager::enumerate() {
     if (result == static_cast<UINT>(-1)) {
         return;
     }
-
     for (UINT index = 0; index < result; ++index) {
         const RAWINPUTDEVICELIST& raw_device = raw_devices[index];
         if (raw_device.dwType != RIM_TYPEKEYBOARD) {
@@ -47,6 +77,15 @@ void DeviceManager::enumerate() {
             }
         }
 
+        if (device.device_name.find(L"RDP_KBD") != std::wstring::npos) {
+            continue;
+        }
+
+        device.friendly_name = getFriendlyName(device.device_name);
+        if (device.friendly_name.empty()) {
+            device.friendly_name = device.device_name;
+        }
+
         keyboard_devices.push_back(std::move(device));
     }
 }
@@ -71,7 +110,6 @@ bool DeviceManager::deviceName(int index, std::wstring& name) const {
         return false;
     }
 
-    name = keyboard_devices[index].device_name;
+    name = keyboard_devices[index].friendly_name;
     return true;
 }
-

@@ -64,7 +64,7 @@ bool KeyboardManager::registerRawInput(void* hwnd) {
     RAWINPUTDEVICE rid = {};
     rid.usUsagePage = 0x01;
     rid.usUsage = 0x06;
-    rid.dwFlags = RIDEV_INPUTSINK;
+    rid.dwFlags = RIDEV_INPUTSINK | RIDEV_DEVNOTIFY;
     rid.hwndTarget = target;
 
     raw_input_enabled_ = RegisterRawInputDevices(&rid, 1, sizeof(rid)) != FALSE;
